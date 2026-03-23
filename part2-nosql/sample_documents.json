@@ -1,0 +1,129 @@
+
+CREATE DATABASE IF NOT EXISTS product_catalog;
+USE product_catalog;
+
+DROP TABLE IF EXISTS products;
+CREATE TABLE products (
+    product_id      VARCHAR(10)     NOT NULL,
+    product_name    VARCHAR(100)    NOT NULL,
+    brand           VARCHAR(100)    NOT NULL,
+    category        VARCHAR(50)     NOT NULL,
+    price           DECIMAL(10, 2)  NOT NULL,
+    stock           INT             NOT NULL DEFAULT 0,
+    rating          DECIMAL(3, 1),
+    total_reviews   INT             DEFAULT 0,
+    added_on        DATE            NOT NULL,
+    CONSTRAINT pk_products PRIMARY KEY (product_id)
+);
+
+-- ============================================================
+-- TABLE: electronics_details
+-- ============================================================
+DROP TABLE IF EXISTS electronics_details;
+CREATE TABLE electronics_details (
+    product_id          VARCHAR(10)     NOT NULL,
+    screen_size_inches  DECIMAL(4, 1),
+    battery_mah         INT,
+    voltage             VARCHAR(20),
+    warranty_years      INT             NOT NULL DEFAULT 1,
+    connectivity        VARCHAR(255),   -- comma-separated: Wi-Fi, Bluetooth, USB
+    operating_system    VARCHAR(50),
+    processor           VARCHAR(100),
+    ram_gb              INT,
+    storage_gb          INT,
+    CONSTRAINT pk_electronics PRIMARY KEY (product_id),
+    CONSTRAINT fk_electronics_product FOREIGN KEY (product_id)
+        REFERENCES products(product_id) ON DELETE CASCADE
+);
+
+-- ============================================================
+-- TABLE: clothing_details
+-- ============================================================
+DROP TABLE IF EXISTS clothing_details;
+CREATE TABLE clothing_details (
+    product_id          VARCHAR(10)     NOT NULL,
+    fabric              VARCHAR(100)    NOT NULL,
+    fit_type            VARCHAR(50),
+    sleeve_type         VARCHAR(50),
+    available_sizes     VARCHAR(100),   -- comma-separated: S, M, L, XL
+    available_colors    VARCHAR(200),   -- comma-separated
+    care_instructions   VARCHAR(255),
+    gender              VARCHAR(20),
+    occasion            VARCHAR(100),
+    CONSTRAINT pk_clothing PRIMARY KEY (product_id),
+    CONSTRAINT fk_clothing_product FOREIGN KEY (product_id)
+        REFERENCES products(product_id) ON DELETE CASCADE
+);
+
+-- ============================================================
+-- TABLE: grocery_details
+-- ============================================================
+DROP TABLE IF EXISTS grocery_details;
+CREATE TABLE grocery_details (
+    product_id          VARCHAR(10)     NOT NULL,
+    weight_kg           DECIMAL(5, 2),
+    ingredients         VARCHAR(255),
+    calories_per_100g   INT,
+    protein_g           DECIMAL(5, 2),
+    carbohydrates_g     DECIMAL(5, 2),
+    fat_g               DECIMAL(5, 2),
+    fiber_g             DECIMAL(5, 2),
+    allergens           VARCHAR(200),
+    certifications      VARCHAR(200),
+    storage_instructions VARCHAR(255),
+    manufactured_date   DATE,
+    expiry_date         DATE            NOT NULL,
+    CONSTRAINT pk_grocery PRIMARY KEY (product_id),
+    CONSTRAINT fk_grocery_product FOREIGN KEY (product_id)
+        REFERENCES products(product_id) ON DELETE CASCADE
+);
+
+-- ============================================================
+-- INSERT: Products
+-- ============================================================
+INSERT INTO products (product_id, product_name, brand, category, price, stock, rating, total_reviews, added_on) VALUES
+
+-- Electronics
+('P001', 'Samsung Galaxy S23',      'Samsung',  'Electronics',  72999.00, 50,  4.5, 1280, '2024-01-10'),
+('P002', 'Sony WH-1000XM5 Headphones', 'Sony',  'Electronics',  29999.00, 80,  4.7, 960,  '2024-02-15'),
+('P003', 'Dell Inspiron 15 Laptop', 'Dell',     'Electronics',  58500.00, 35,  4.3, 540,  '2024-03-01'),
+
+-- Clothing
+('P004', 'Men\'s Slim Fit Formal Shirt', 'Arrow',     'Clothing', 1299.00, 200, 4.1, 238, '2024-03-10'),
+('P005', 'Women\'s Floral Kurti',        'Biba',      'Clothing',  899.00, 180, 4.4, 410, '2024-04-05'),
+('P006', 'Unisex Sports Joggers',        'Adidas',    'Clothing', 2499.00, 150, 4.2, 315, '2024-05-20'),
+
+-- Groceries
+('P007', 'Organic Whole Wheat Flour',   'Aashirvaad', 'Groceries',  320.00, 500, 4.6, 1024, '2024-06-01'),
+('P008', 'Cold Pressed Coconut Oil',    'Parachute',  'Groceries',  480.00, 300, 4.5,  786, '2024-07-15'),
+('P009', 'Tata Salt Iodised',           'Tata',       'Groceries',   28.00, 800, 4.8, 2100, '2024-08-01');
+
+-- ============================================================
+-- INSERT: Electronics Details
+-- ============================================================
+INSERT INTO electronics_details
+    (product_id, screen_size_inches, battery_mah, voltage, warranty_years, connectivity, operating_system, processor, ram_gb, storage_gb)
+VALUES
+('P001', 6.1,  3900, '5V/25W', 1, 'Wi-Fi, Bluetooth 5.3, USB-C, NFC', 'Android 13',    'Snapdragon 8 Gen 2', 8,   128),
+('P002', NULL, 2500, '5V/2A',  1, 'Bluetooth 5.2, USB-C, 3.5mm Jack',  NULL,            NULL,                 NULL, NULL),
+('P003', 15.6, NULL, '230V',   1, 'Wi-Fi 6, Bluetooth 5.1, USB 3.2, HDMI', 'Windows 11', 'Intel Core i5-1235U', 16, 512);
+
+-- ============================================================
+-- INSERT: Clothing Details
+-- ============================================================
+INSERT INTO clothing_details
+    (product_id, fabric, fit_type, sleeve_type, available_sizes, available_colors, care_instructions, gender, occasion)
+VALUES
+('P004', '100% Cotton',          'Slim Fit',   'Full Sleeve', 'S, M, L, XL, XXL', 'White, Light Blue, Grey, Navy',     'Machine wash cold, Do not bleach, Iron on medium heat', 'Men',   'Formal'),
+('P005', 'Rayon',                'Regular Fit','Short Sleeve', 'XS, S, M, L, XL', 'Yellow, Pink, Green, Orange',       'Hand wash only, Dry in shade, Mild detergent',          'Women', 'Casual, Ethnic'),
+('P006', '80% Polyester 20% Cotton', 'Regular Fit','Full Length', 'XS, S, M, L, XL, XXL', 'Black, Navy, Grey, Olive', 'Machine wash, Tumble dry low, Do not iron print',       'Unisex','Sports, Casual');
+
+-- ============================================================
+-- INSERT: Grocery Details
+-- ============================================================
+INSERT INTO grocery_details
+    (product_id, weight_kg, ingredients, calories_per_100g, protein_g, carbohydrates_g, fat_g, fiber_g, allergens, certifications, storage_instructions, manufactured_date, expiry_date)
+VALUES
+('P007', 5.00, '100% Whole Wheat',                           341, 12.5, 69.2, 1.9, 10.7, 'Gluten',      'FSSAI Certified, Organic India',    'Store in a cool dry place',               '2024-11-01', '2025-10-31'),
+('P008', 0.50, '100% Pure Coconut',                          862,  0.0,  0.0, 100.0, 0.0, 'None',       'FSSAI Certified, Agmark, USDA Organic', 'Store away from direct sunlight',       '2024-10-01', '2026-09-30'),
+('P009', 1.00, 'Iodised Salt, Potassium Iodate',               0,  0.0,  0.0,  0.0,  0.0, 'None',       'FSSAI Certified, ISO 9001',          'Store in a dry place, keep lid closed',   '2024-08-01', '2027-07-31');
